@@ -155,6 +155,7 @@
       <b>Drop PNG frames here</b><br>or click to browse
       <input type="file" id="file" accept="image/png,image/webp,image/gif,image/jpeg" multiple hidden>
     </div>
+    <button class="btn ghost" id="loadExample" style="width:100%;margin-top:0;margin-bottom:14px">✨ Load example frames</button>
     <div class="frames" id="frames"></div>
 
     <h2 style="margin-top:18px">2 · Layout</h2>
@@ -262,6 +263,32 @@
       img.src = url;
     });
   }
+
+  function loadExample(){
+    errEl.textContent = "";
+    var colors = ["#ff5f5f","#ffb14d","#ffe14d","#7ee787","#58a6ff","#bc8cff","#ff7eb6","#4dd0e1"];
+    for (var i = 0; i < 8; i++){
+      (function(i){
+        var c = document.createElement("canvas");
+        c.width = 16; c.height = 16;
+        var ctx = c.getContext("2d");
+        ctx.fillStyle = colors[i];
+        if (i % 4 === 0){ ctx.fillRect(2, 2, 12, 12); ctx.fillStyle = "#0d1117"; ctx.fillRect(5, 5, 6, 6); }
+        else if (i % 4 === 1){ ctx.beginPath(); ctx.arc(8, 8, 6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#0d1117"; ctx.beginPath(); ctx.arc(8, 8, 2, 0, Math.PI * 2); ctx.fill(); }
+        else if (i % 4 === 2){ ctx.beginPath(); ctx.moveTo(8, 2); ctx.lineTo(14, 13); ctx.lineTo(2, 13); ctx.closePath(); ctx.fill(); }
+        else { for (var y = 0; y < 16; y += 4) ctx.fillRect(1, y, 14, 2); }
+        var img = new Image();
+        img.onload = function(){
+          var rec = { name: "example-" + (i + 1), img: img, w: img.naturalWidth, h: img.naturalHeight, trimmed: null };
+          if (trim.checked) rec.trimmed = computeTrim(img);
+          frames.push(rec);
+          renderThumbs();
+        };
+        img.src = c.toDataURL("image/png");
+      })(i);
+    }
+  }
+  $("loadExample").addEventListener("click", loadExample);
 
   function computeTrim(img){
     var c = document.createElement("canvas");
